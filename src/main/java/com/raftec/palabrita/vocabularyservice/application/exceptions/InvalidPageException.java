@@ -1,4 +1,4 @@
-package com.raftec.palabrita.vocabularyservice.application.controller.exceptions;
+package com.raftec.palabrita.vocabularyservice.application.exceptions;
 
 import lombok.Getter;
 

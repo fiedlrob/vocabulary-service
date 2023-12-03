@@ -1,7 +1,7 @@
 package com.raftec.palabrita.vocabularyservice.application.controller;
 
-import com.raftec.palabrita.vocabularyservice.application.controller.exceptions.InvalidPageException;
-import com.raftec.palabrita.vocabularyservice.application.controller.responses.PagedResponse;
+import com.raftec.palabrita.vocabularyservice.application.exceptions.InvalidPageException;
+import com.raftec.palabrita.vocabularyservice.application.dto.PagedResponse;
 import com.raftec.palabrita.vocabularyservice.domain.model.Language;
 import com.raftec.palabrita.vocabularyservice.domain.services.ILanguageService;
 import jakarta.validation.constraints.Min;
@@ -40,14 +40,8 @@ public class LanguageController {
             throw new InvalidPageException(totalPages, page);
         }
 
-        return ResponseEntity.ok(new PagedResponse<>(
-                languages,
-                languages.size(),
-                page,
-                (int) totalCount,
-                totalPages,
-                page > 1,
-                page < totalPages));
+        return ResponseEntity.ok(new PagedResponse<>(languages.size(), page, (int) totalCount, totalPages,
+                page > 1, page < totalPages, languages));
     }
 
     @GetMapping(path = "/{code}", produces = MediaType.APPLICATION_JSON_VALUE)

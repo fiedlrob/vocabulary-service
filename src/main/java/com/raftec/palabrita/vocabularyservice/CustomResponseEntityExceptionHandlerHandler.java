@@ -1,7 +1,7 @@
 package com.raftec.palabrita.vocabularyservice;
 
-import com.raftec.palabrita.vocabularyservice.application.controller.exceptions.InvalidPageException;
-import com.raftec.palabrita.vocabularyservice.application.controller.responses.ErrorDetails;
+import com.raftec.palabrita.vocabularyservice.application.exceptions.InvalidPageException;
+import com.raftec.palabrita.vocabularyservice.application.dto.ErrorDetails;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
