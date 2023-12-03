@@ -1,0 +1,18 @@
+services:
+  postgres:
+    image: 'postgres:latest'
+    container_name: 'vocabularydb'
+    environment:
+      - 'POSTGRES_DB=vocabularydb'
+      - 'POSTGRES_PASSWORD=53cr3t'
+      - 'POSTGRES_USER=vocabularyservice'
+    ports:
+      - 5432:5432
+
+  adminer:
+    image: 'adminer:latest'
+    container_name: 'adminer'
+    environment:
+        - 'ADMINER_DEFAULT_SERVER=postgres'
+    ports:
+      - 8080:8080
