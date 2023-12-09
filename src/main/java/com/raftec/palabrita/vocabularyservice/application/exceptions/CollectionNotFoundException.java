@@ -7,7 +7,6 @@ import lombok.experimental.FieldDefaults;
 @RequiredArgsConstructor
 @Getter
 @FieldDefaults(makeFinal = true)
-public class InvalidPageException extends RuntimeException {
-    int pageCount;
-    int requestedPage;
+public class CollectionNotFoundException extends RuntimeException{
+    String collectionId;
 }

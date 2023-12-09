@@ -2,6 +2,7 @@ package com.raftec.palabrita.vocabularyservice.domain.services;
 
 import com.raftec.palabrita.vocabularyservice.domain.model.Language;
 import com.raftec.palabrita.vocabularyservice.infrastructure.repositories.LanguageRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
@@ -9,12 +10,9 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class LanguageService implements ILanguageService {
     private final LanguageRepository languageRepository;
-
-    public LanguageService(LanguageRepository languageRepository) {
-        this.languageRepository = languageRepository;
-    }
 
     @Override
     public List<Language> getLanguages() {

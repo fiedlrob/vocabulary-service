@@ -1,5 +1,6 @@
 package com.raftec.palabrita.vocabularyservice;
 
+import com.raftec.palabrita.vocabularyservice.domain.model.Collection;
 import com.raftec.palabrita.vocabularyservice.domain.model.Language;
 
 import java.util.ArrayList;
@@ -7,6 +8,22 @@ import java.util.Arrays;
 import java.util.List;
 
 public class DataProvider {
+    public static List<Collection> getCollection() {
+        return new ArrayList<>(
+                List.of(
+                        new Collection(
+                                100L,
+                                TestConstants.UserId1,
+                                TestConstants.CollectionId1,
+                                TestConstants.CreationDate1,
+                                TestConstants.CollectionName1,
+                                new Language("en", "English", "English"),
+                                new Language("es", "Spanish", "Español")
+                        )
+                )
+        );
+    }
+
     public static List<Language> getLanguages() {
         return new ArrayList<>(
                 Arrays.asList(

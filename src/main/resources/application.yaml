@@ -1,0 +1,12 @@
+application:
+  title: vocabulary-service
+  version: 0.0.1-SNAPSHOT
+
+server:
+  port: 5001
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/vocabularydb
+    username: vocabularyservice
+    password: 53cr3t # Just a sample password, change it for your needs
