@@ -13,12 +13,14 @@ public final class TestConstants
     public static final String CollectionId3 = "ef3babca"; // Owned by UserId2
     public static final String CollectionId4 = "bb0d9157"; // Owned by UserId2
     public static final  String CollectionId5 = "b123e4de"; // Owned by UserId1
-
     public static final String CollectionId6 = "0018a71e"; // Unknown collection used for testing
 
     // yyyy-mm-dd hh:mm:ss
     public static final Timestamp CreationDate1 = Timestamp.valueOf("2021-10-22 23:09:45");
-    public static final Timestamp CreationDate2 = Timestamp.valueOf("2023-10-22 23:09:45");
+    public static final Timestamp CreationDate2 = Timestamp.valueOf("2023-08-03 17:09:27");
+    public static final Timestamp CreationDate3 = Timestamp.valueOf("2022-09-13 10:22:10");
 
     public static final String CollectionName1 = "Test Collection 1";
+    public static final String CollectionName2 = "Test Collection 2";
+    public static final String CollectionName3 = "Test Collection 3";
 }

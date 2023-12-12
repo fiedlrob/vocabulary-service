@@ -16,3 +16,17 @@ services:
         - 'ADMINER_DEFAULT_SERVER=postgres'
     ports:
       - 8080:8080
+
+  vocabulary-service:
+    build:
+        context: .
+        dockerfile: Dockerfile
+    container_name: 'vocabulary-service'
+    environment:
+      - 'SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/vocabularydb'
+      - 'SPRING_DATASOURCE_USERNAME=vocabularyservice'
+      - 'SPRING_DATASOURCE_PASSWORD=53cr3t'
+    ports:
+      - 5001:5001
+    depends_on:
+      - postgres

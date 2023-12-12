@@ -29,6 +29,14 @@ public class VocabularyServiceExceptionHandlerHandler extends ResponseEntityExce
         this.messageSource = messageSource;
     }
 
+    /**
+     * Handle InvalidPageException
+     * The InvalidPageException is thrown when the requested page is bigger than the total number of pages.
+     *
+     * @param ex      InvalidPageException
+     * @param request WebRequest
+     * @return ResponseEntity<ErrorDetails>
+     */
     @ResponseBody
     @ExceptionHandler(InvalidPageException.class)
     public final ResponseEntity<ErrorDetails> handleUserNotFoundException(@NonNull InvalidPageException ex,
@@ -41,6 +49,14 @@ public class VocabularyServiceExceptionHandlerHandler extends ResponseEntityExce
                 HttpStatus.BAD_REQUEST);
     }
 
+    /**
+     * Handle CollectionNotFoundException
+     * The CollectionNotFoundException is thrown when the requested collection is not found.
+     *
+     * @param ex      CollectionNotFoundException
+     * @param request WebRequest
+     * @return ResponseEntity<ErrorDetails>
+     */
     @ResponseBody
     @ExceptionHandler(CollectionNotFoundException.class)
     public final ResponseEntity<ErrorDetails> handleCollectionNotFoundException(@NonNull CollectionNotFoundException ex,

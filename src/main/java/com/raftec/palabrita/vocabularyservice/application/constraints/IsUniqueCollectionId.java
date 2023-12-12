@@ -11,9 +11,9 @@ import java.lang.annotation.*;
  */
 @Documented
 @Constraint(validatedBy = CollectionIdValidator.class)
-@Target( { ElementType.TYPE })
+@Target( { ElementType.FIELD, ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface HasUniqueCollectionId {
+public @interface IsUniqueCollectionId {
     String message() default "{validation.collectionid.not.unique}";
 
     Class<?>[] groups() default {};

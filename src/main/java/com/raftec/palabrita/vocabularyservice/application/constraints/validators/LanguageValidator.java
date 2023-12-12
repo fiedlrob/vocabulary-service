@@ -5,6 +5,7 @@ import com.raftec.palabrita.vocabularyservice.infrastructure.repositories.Langua
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Component;
 
 /**
@@ -14,8 +15,9 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @RequiredArgsConstructor
+@FieldDefaults(makeFinal = true)
 public class LanguageValidator implements ConstraintValidator<IsValidLanguage, String> {
-    private final LanguageRepository languageRepository;
+    LanguageRepository languageRepository;
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {

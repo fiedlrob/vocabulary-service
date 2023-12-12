@@ -10,6 +10,10 @@ public class CollectionSpecification {
         return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("userId"), userId);
     }
 
+    public static Specification<Collection> byCollectionId(String collectionId) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("collectionId"), collectionId);
+    }
+
     public static Specification<Collection> byUserIdAndCollectionId(String userId, String collectionId) {
         return (root, query, criteriaBuilder) -> criteriaBuilder.and(
                 criteriaBuilder.equal(root.get("userId"), userId),

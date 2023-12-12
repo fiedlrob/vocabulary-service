@@ -1,5 +1,6 @@
 package com.raftec.palabrita.vocabularyservice.application.dto;
 
+import com.raftec.palabrita.vocabularyservice.application.constraints.IsUniqueCollectionId;
 import com.raftec.palabrita.vocabularyservice.application.constraints.IsValidLanguage;
 import jakarta.validation.constraints.NotBlank;
 
@@ -10,7 +11,7 @@ import jakarta.validation.constraints.NotBlank;
  */
 public record CollectionRequest(
         @NotBlank String title,
-        String collectionId,
+        @IsUniqueCollectionId String collectionId,
         @IsValidLanguage String sourceLanguageId,
         @IsValidLanguage String targetLanguageId) {
 }

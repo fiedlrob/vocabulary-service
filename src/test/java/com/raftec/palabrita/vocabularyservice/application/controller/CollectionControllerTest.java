@@ -2,6 +2,7 @@ package com.raftec.palabrita.vocabularyservice.application.controller;
 
 import com.raftec.palabrita.vocabularyservice.DataProvider;
 import com.raftec.palabrita.vocabularyservice.TestConstants;
+import com.raftec.palabrita.vocabularyservice.domain.model.Collection;
 import com.raftec.palabrita.vocabularyservice.infrastructure.repositories.CollectionRepository;
 import com.raftec.palabrita.vocabularyservice.infrastructure.repositories.LanguageRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
@@ -18,6 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -35,6 +38,7 @@ class CollectionControllerTest {
 
     @MockBean
     private LanguageRepository languageRepository;
+
 
     private static final String accessToken = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6InRlc3R8YjhiYTQ2ZGIyOGFiZmE1NmJmYWVkODg3IiwiZXhwIjoxNzMzNTA1NDMxLCJpc3MiOiJodHRwczovL3Rlc3QtcGFsYWJyaXRhLm5ldC8iLCJhdWQiOiJodHRwczovL3BhbGFicml0YS5uZXQvYXBpIn0.ahUCdKAtnERW9LJKnQbWEMBmFdMjrF8XUfHb18el5QE";
 
@@ -95,7 +99,7 @@ class CollectionControllerTest {
     @Test
     @DisplayName("Create a collection with a valid request")
     void TestCreateCollection() throws Exception {
-        var collection = DataProvider.getCollection().stream().filter(c -> c.getCollectionId().equals(
+        var collection = DataProvider.getCollections().stream().filter(c -> c.getCollectionId().equals(
                 TestConstants.CollectionId1)).findFirst().get();
 
         when(collectionRepository.save(any())).thenReturn(collection);
@@ -141,5 +145,24 @@ class CollectionControllerTest {
                 .andExpect(jsonPath("$.errors", hasSize(1)))
                 .andExpect(jsonPath("$.errors[0]", is("Field: title, Message: must not be blank, Value: null")))
                 .andExpect(jsonPath("$.path", is("/api/v1/collections")));
+    }
+
+    @Test
+    @DisplayName("Create a collection with a valid request")
+    @SuppressWarnings("unchecked")
+    void TestCreateCollectionInvalidCollectionId() throws Exception {
+        when(collectionRepository.exists((Specification<Collection>) any())).thenReturn(true);
+        when(languageRepository.existsById(anyString())).thenReturn(true);
+
+        mockMvc.perform(post("/api/v1/collections")
+                        .header(HttpHeaders.AUTHORIZATION, accessToken)
+                        .contentType("application/json;charset=UTF-8")
+                        .content("{\"title\": \"Collection title\", \"collectionId\": \"012345678\", \"sourceLanguageId\": \"xx\", \"targetLanguageId\": \"es\"}"))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(jsonPath("$.message", is("Validation failed")))
+                .andExpect(jsonPath("$.errors", hasSize(1)))
+                .andExpect(jsonPath("$.errors[0]", is("Field: collectionId, Message: Collection id must be unique, Value: 012345678")));
     }
 }
