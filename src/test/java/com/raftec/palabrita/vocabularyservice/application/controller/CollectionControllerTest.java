@@ -14,7 +14,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.Matchers.hasSize;
@@ -27,8 +26,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(CollectionController.class)
-@ComponentScan(basePackages = "com.raftec.palabrita.vocabularyservice")
-@ActiveProfiles("test")
+@ComponentScan(basePackages = {
+        "com.raftec.palabrita.vocabularyservice",
+        "com.raftec.palabrita.vocabularyservice.infrastructure.repositories"
+} )
 class CollectionControllerTest {
     @Autowired
     private MockMvc mockMvc;
@@ -43,7 +44,7 @@ class CollectionControllerTest {
     private static final String accessToken = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6InRlc3R8YjhiYTQ2ZGIyOGFiZmE1NmJmYWVkODg3IiwiZXhwIjoxNzMzNTA1NDMxLCJpc3MiOiJodHRwczovL3Rlc3QtcGFsYWJyaXRhLm5ldC8iLCJhdWQiOiJodHRwczovL3BhbGFicml0YS5uZXQvYXBpIn0.ahUCdKAtnERW9LJKnQbWEMBmFdMjrF8XUfHb18el5QE";
 
     @Test
-    @DisplayName("Verify validation of the sourceLanguageId field")
+    @DisplayName("Create collection, verify validation of the sourceLanguageId field (invalid language code)")
     void TestValidationOfSourceLanguage() throws Exception {
         when(languageRepository.existsById("xx")).thenReturn(false);
         when(languageRepository.existsById("es")).thenReturn(true);
@@ -70,7 +71,7 @@ class CollectionControllerTest {
     }
 
     @Test
-    @DisplayName("Verify validation of the targetLanguageId field")
+    @DisplayName("Create collection, verify validation of the targetLanguageId field (invalid language code)")
     void TestValidationOfTargetLanguage() throws Exception {
         when(languageRepository.existsById("xx")).thenReturn(false);
         when(languageRepository.existsById("es")).thenReturn(true);
@@ -97,7 +98,7 @@ class CollectionControllerTest {
     }
 
     @Test
-    @DisplayName("Create a collection with a valid request")
+    @DisplayName("Create collection, success case")
     void TestCreateCollection() throws Exception {
         var collection = DataProvider.getCollections().stream().filter(c -> c.getCollectionId().equals(
                 TestConstants.CollectionId1)).findFirst().get();
@@ -120,8 +121,11 @@ class CollectionControllerTest {
                                 ", \"sourceLanguageId\": \"" + collection.getSourceLanguage().getCode() + "\"" +
                                 ", \"targetLanguageId\": \"" + collection.getTargetLanguage().getCode() + "\"}"))
                 .andDo(print())
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(header().exists(HttpHeaders.LOCATION))
+                .andExpect(header().string(HttpHeaders.LOCATION,
+                        "http://localhost/api/v1/collections/" + collection.getCollectionId()))
                 .andExpect(jsonPath("$.title", is(collection.getTitle())))
                 .andExpect(jsonPath("$.collectionId", is(collection.getCollectionId())))
                 .andExpect(jsonPath("$.sourceLanguage.code", is(collection.getSourceLanguage().getCode())))
@@ -129,7 +133,7 @@ class CollectionControllerTest {
     }
 
     @Test
-    @DisplayName("Create a collection with a invalid request (no title provided)")
+    @DisplayName("Create collection, verify validation of the title field (no title provided)")
     void TestCreateCollectionNoTitle() throws Exception {
         when(languageRepository.existsById(any(String.class))).thenReturn(true);
 
@@ -148,7 +152,7 @@ class CollectionControllerTest {
     }
 
     @Test
-    @DisplayName("Create a collection with a valid request")
+    @DisplayName("Create collection, verify validation of the collectionId field (collectionId already exists)")
     @SuppressWarnings("unchecked")
     void TestCreateCollectionInvalidCollectionId() throws Exception {
         when(collectionRepository.exists((Specification<Collection>) any())).thenReturn(true);

@@ -1,22 +1,31 @@
 package com.raftec.palabrita.vocabularyservice.domain.services;
 
+import com.raftec.palabrita.vocabularyservice.application.dto.CollectionEntryRequest;
 import com.raftec.palabrita.vocabularyservice.application.dto.CollectionRequest;
 import com.raftec.palabrita.vocabularyservice.application.exceptions.CollectionNotFoundException;
 import com.raftec.palabrita.vocabularyservice.domain.model.Collection;
+import com.raftec.palabrita.vocabularyservice.domain.model.CollectionEntry;
+import com.raftec.palabrita.vocabularyservice.domain.model.Translation;
+import com.raftec.palabrita.vocabularyservice.infrastructure.repositories.CollectionEntryRepository;
 import com.raftec.palabrita.vocabularyservice.infrastructure.repositories.CollectionRepository;
 import com.raftec.palabrita.vocabularyservice.infrastructure.repositories.LanguageRepository;
+import com.raftec.palabrita.vocabularyservice.infrastructure.repositories.specifications.CollectionEntrySpecification;
 import com.raftec.palabrita.vocabularyservice.infrastructure.repositories.specifications.CollectionSpecification;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@FieldDefaults(makeFinal = true)
 public class CollectionService implements ICollectionService {
-    private final CollectionRepository collectionRepository;
-    private final LanguageRepository languageRepository;
+    LanguageRepository languageRepository;
+    CollectionRepository collectionRepository;
+    CollectionEntryRepository collectionEntryRepository;
 
     @Override
     public Collection getCollection(String userId, String collectionId) {
@@ -60,5 +69,34 @@ public class CollectionService implements ICollectionService {
                 CollectionSpecification.byUserIdAndCollectionId(userId, collectionId));
 
         collection.ifPresent(collectionRepository::delete);
+    }
+
+    @Override
+    public void deleteCollectionEntry(String userId, String collectionId, String keyword) {
+        collectionRepository.findOne(CollectionSpecification.byUserIdAndCollectionId(userId, collectionId))
+                .flatMap(collection -> collectionEntryRepository.findOne(
+                        CollectionEntrySpecification.byParentIdAndKeyword(
+                                collection.getId(), keyword))).ifPresent(collectionEntryRepository::delete);
+    }
+
+    @Override
+    public CollectionEntry createCollectionEntry(String userId, String collectionId, CollectionEntryRequest collectionEntryRequest) {
+        var collection = collectionRepository.findOne(CollectionSpecification.byUserIdAndCollectionId(userId, collectionId))
+                .orElseThrow(() -> new CollectionNotFoundException(collectionId));
+
+        var collectionEntry = CollectionEntry.builder()
+                .keyword(collectionEntryRequest.keyword())
+                .parentId(collection.getId())
+                .build();
+
+        collectionEntry.setTranslations((Arrays.stream(collectionEntryRequest.translations())
+                .map(translation -> Translation.builder().value(translation).collectionEntry(collectionEntry).build())
+                .toList()));
+
+        collection.getCollectionEntries().add(collectionEntry);
+
+        collectionRepository.save(collection);
+
+        return collectionEntry;
     }
 }

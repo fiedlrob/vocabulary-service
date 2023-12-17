@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+
 public class DataProvider {
     public static List<Collection> getCollections() {
         return new ArrayList<>(
@@ -18,8 +19,8 @@ public class DataProvider {
                                 TestConstants.CreationDate1,
                                 TestConstants.CollectionName1,
                                 new Language("en", "English", "English"),
-                                new Language("es", "Spanish", "Español")
-                        ),
+                                new Language("es", "Spanish", "Español"),
+                                new ArrayList<>()),
                         new Collection(
                                 100L,
                                 TestConstants.UserId1,
@@ -27,8 +28,8 @@ public class DataProvider {
                                 TestConstants.CreationDate2,
                                 TestConstants.CollectionName2,
                                 new Language("en", "English", "English"),
-                                new Language("es", "Spanish", "Español")
-                        ),
+                                new Language("es", "Spanish", "Español"),
+                                new ArrayList<>()),
                         new Collection(
                                 100L,
                                 TestConstants.UserId2,
@@ -36,8 +37,8 @@ public class DataProvider {
                                 TestConstants.CreationDate3,
                                 TestConstants.CollectionName3,
                                 new Language("en", "English", "English"),
-                                new Language("es", "Spanish", "Español")
-                        )
+                                new Language("es", "Spanish", "Español"),
+                                new ArrayList<>())
                 )
         );
     }

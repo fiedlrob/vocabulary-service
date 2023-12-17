@@ -9,6 +9,5 @@ public interface ILanguageService {
     List<Language> getLanguages();
     List<Language> getLanguages(int page, int size);
     Optional<Language> getLanguage(String code);
-
     long getLanguageCount();
 }

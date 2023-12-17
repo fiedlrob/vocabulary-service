@@ -15,6 +15,29 @@ java {
 	}
 }
 
+sourceSets {
+	integration {
+		java {
+			srcDir 'src/integration/java'
+
+			compileClasspath += main.output
+			// So that we can compile against the libs used by the business classes:
+			compileClasspath += main.compileClasspath
+
+			// So that we can compile against the unit test classes (custom utilities fx):
+			compileClasspath += test.output
+			// So that we can compile against the libs used by the unit test classes (JUnit, Spring test support, ...):
+			compileClasspath += test.compileClasspath
+
+			// So that test- and business classes can be used at runtime:
+			runtimeClasspath += test.runtimeClasspath
+		}
+		resources {
+			srcDir 'src/integration/resources'
+		}
+	}
+}
+
 configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
@@ -32,10 +55,11 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-hateoas'
-
 	implementation 'org.mapstruct:mapstruct:1.5.5.Final'
 	implementation 'org.flywaydb:flyway-core'
 	implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
+	implementation 'org.springdoc:springdoc-openapi-starter-common:2.3.0'
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'org.postgresql:postgresql'
@@ -44,12 +68,19 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.boot:spring-boot-testcontainers'
 	testImplementation 'org.testcontainers:junit-jupiter'
 	testImplementation 'org.testcontainers:postgresql'
 	testImplementation 'com.h2database:h2'
+	testImplementation 'io.rest-assured:rest-assured:5.4.0'
 }
 
 tasks.named('test') {
+	useJUnitPlatform()
+}
+
+tasks.register('integrationTest', Test) {
+	testClassesDirs = sourceSets.integration.output.classesDirs
+	classpath = sourceSets.integration.runtimeClasspath
+
 	useJUnitPlatform()
 }

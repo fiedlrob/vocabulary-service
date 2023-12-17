@@ -7,6 +7,7 @@ import lombok.experimental.FieldDefaults;
 @RequiredArgsConstructor
 @Getter
 @FieldDefaults(makeFinal = true)
-public class CollectionNotFoundException extends RuntimeException {
+public class CollectionEntryNotFoundException extends RuntimeException {
     String collectionId;
+    String keyword;
 }

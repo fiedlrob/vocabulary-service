@@ -6,6 +6,8 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.domain.Sort;
 
+import java.util.List;
+
 @Entity
 @Table(name = "collections")
 @NoArgsConstructor
@@ -60,4 +62,7 @@ public class Collection {
     @ManyToOne
     @JoinColumn(name = "target_language_code")
     private Language targetLanguage;
+
+    @OneToMany(mappedBy = "parentId", cascade = CascadeType.ALL)
+    private List<CollectionEntry> collectionEntries;
 }
