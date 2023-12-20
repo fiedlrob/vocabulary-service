@@ -3,14 +3,10 @@ package com.raftec.palabrita.vocabularyservice.application.controller;
 import com.raftec.palabrita.vocabularyservice.DataProvider;
 import com.raftec.palabrita.vocabularyservice.TestConstants;
 import com.raftec.palabrita.vocabularyservice.domain.model.Collection;
-import com.raftec.palabrita.vocabularyservice.infrastructure.repositories.CollectionRepository;
-import com.raftec.palabrita.vocabularyservice.infrastructure.repositories.LanguageRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -26,22 +22,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(CollectionController.class)
-@ComponentScan(basePackages = {
-        "com.raftec.palabrita.vocabularyservice",
-        "com.raftec.palabrita.vocabularyservice.infrastructure.repositories"
-} )
-class CollectionControllerTest {
+class CollectionControllerTest extends ControllerBaseTest {
+    public static final String RESOURCE_PATH = "/api/v1/collections";
+
     @Autowired
     private MockMvc mockMvc;
-
-    @MockBean
-    private CollectionRepository collectionRepository;
-
-    @MockBean
-    private LanguageRepository languageRepository;
-
-
-    private static final String accessToken = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6InRlc3R8YjhiYTQ2ZGIyOGFiZmE1NmJmYWVkODg3IiwiZXhwIjoxNzMzNTA1NDMxLCJpc3MiOiJodHRwczovL3Rlc3QtcGFsYWJyaXRhLm5ldC8iLCJhdWQiOiJodHRwczovL3BhbGFicml0YS5uZXQvYXBpIn0.ahUCdKAtnERW9LJKnQbWEMBmFdMjrF8XUfHb18el5QE";
 
     @Test
     @DisplayName("Create collection, verify validation of the sourceLanguageId field (invalid language code)")
@@ -49,9 +34,9 @@ class CollectionControllerTest {
         when(languageRepository.existsById("xx")).thenReturn(false);
         when(languageRepository.existsById("es")).thenReturn(true);
 
-        mockMvc.perform(post("/api/v1/collections")
+        mockMvc.perform(post(RESOURCE_PATH)
                         .header(HttpHeaders.AUTHORIZATION, accessToken)
-                        .contentType("application/json;charset=UTF-8")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content("{\"title\": \"Collection title\", \"collectionId\": \"012345678\", \"sourceLanguageId\": \"xx\", \"targetLanguageId\": \"es\"}"))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
@@ -59,9 +44,9 @@ class CollectionControllerTest {
                 .andExpect(jsonPath("$.errors", hasSize(1)))
                 .andExpect(jsonPath("$.errors[0]", is("Field: sourceLanguageId, Message: Language not supported, Value: xx")));
 
-        mockMvc.perform(post("/api/v1/collections")
+        mockMvc.perform(post(RESOURCE_PATH)
                         .header(HttpHeaders.AUTHORIZATION, accessToken)
-                        .contentType("application/json;charset=UTF-8")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content("{\"title\": \"Collection title\", \"collectionId\": \"012345678\", \"targetLanguageId\": \"es\"}"))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
@@ -76,9 +61,9 @@ class CollectionControllerTest {
         when(languageRepository.existsById("xx")).thenReturn(false);
         when(languageRepository.existsById("es")).thenReturn(true);
 
-        mockMvc.perform(post("/api/v1/collections")
+        mockMvc.perform(post(RESOURCE_PATH)
                         .header(HttpHeaders.AUTHORIZATION, accessToken)
-                        .contentType("application/json;charset=UTF-8")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content("{\"title\": \"Collection title\", \"collectionId\": \"012345678\", \"sourceLanguageId\": \"es\", \"targetLanguageId\": \"xx\"}"))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
@@ -86,9 +71,9 @@ class CollectionControllerTest {
                 .andExpect(jsonPath("$.errors", hasSize(1)))
                 .andExpect(jsonPath("$.errors[0]", is("Field: targetLanguageId, Message: Language not supported, Value: xx")));
 
-        mockMvc.perform(post("/api/v1/collections")
+        mockMvc.perform(post(RESOURCE_PATH)
                         .header(HttpHeaders.AUTHORIZATION, accessToken)
-                        .contentType("application/json;charset=UTF-8")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content("{\"title\": \"Collection title\", \"collectionId\": \"012345678\", \"sourceLanguageId\": \"es\"}"))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
@@ -113,9 +98,9 @@ class CollectionControllerTest {
         when(languageRepository.findById(collection.getTargetLanguage().getCode())).thenReturn(
                 DataProvider.getLanguages().stream().filter(l -> l.getCode().equals(collection.getTargetLanguage().getCode())).findFirst());
 
-        mockMvc.perform(post("/api/v1/collections")
+        mockMvc.perform(post(RESOURCE_PATH)
                         .header(HttpHeaders.AUTHORIZATION, accessToken)
-                        .contentType("application/json;charset=UTF-8")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content("{\"title\": \"" + collection.getTitle() + "\"" +
                                 ", \"collectionId\": \"" + collection.getCollectionId() + "\"" +
                                 ", \"sourceLanguageId\": \"" + collection.getSourceLanguage().getCode() + "\"" +
@@ -137,9 +122,9 @@ class CollectionControllerTest {
     void TestCreateCollectionNoTitle() throws Exception {
         when(languageRepository.existsById(any(String.class))).thenReturn(true);
 
-        mockMvc.perform(post("/api/v1/collections")
+        mockMvc.perform(post(RESOURCE_PATH)
                         .header(HttpHeaders.AUTHORIZATION, accessToken)
-                        .contentType("application/json;charset=UTF-8")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content("{\"collectionId\": \"012345678\"" +
                                 ", \"sourceLanguageId\": \"de\"" +
                                 ", \"targetLanguageId\": \"en\"}"))
@@ -158,9 +143,9 @@ class CollectionControllerTest {
         when(collectionRepository.exists((Specification<Collection>) any())).thenReturn(true);
         when(languageRepository.existsById(anyString())).thenReturn(true);
 
-        mockMvc.perform(post("/api/v1/collections")
+        mockMvc.perform(post(RESOURCE_PATH)
                         .header(HttpHeaders.AUTHORIZATION, accessToken)
-                        .contentType("application/json;charset=UTF-8")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content("{\"title\": \"Collection title\", \"collectionId\": \"012345678\", \"sourceLanguageId\": \"xx\", \"targetLanguageId\": \"es\"}"))
                 .andDo(print())
                 .andExpect(status().isBadRequest())

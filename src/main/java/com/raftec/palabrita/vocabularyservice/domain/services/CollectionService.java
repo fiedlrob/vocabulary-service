@@ -99,4 +99,25 @@ public class CollectionService implements ICollectionService {
 
         return collectionEntry;
     }
+
+    @Override
+    public List<CollectionEntry> getCollectionEntries(String userId, String collectionId, int page, int size) {
+        return collectionRepository.findOne(CollectionSpecification.byUserIdAndCollectionId(userId, collectionId))
+                .map(collection -> collectionEntryRepository.findAll(
+                        CollectionEntrySpecification.byParentId(collection.getId()),
+                        PageRequest.of(page, size, CollectionEntry.DEFAULT_SORT)).toList())
+                .orElseThrow(() -> new CollectionNotFoundException(collectionId));
+    }
+
+    @Override
+    public long getCollectionEntriesCount(String userId, String collectionId) {
+        return collectionRepository.findOne(CollectionSpecification.byUserIdAndCollectionId(userId, collectionId))
+                .map(collection -> collectionEntryRepository.count(CollectionEntrySpecification.byParentId(collection.getId())))
+                .orElseThrow(() -> new CollectionNotFoundException(collectionId));
+    }
+
+    @Override
+    public boolean isOwner(String userId, String collectionId) {
+        return collectionRepository.exists(CollectionSpecification.byUserIdAndCollectionId(userId, collectionId));
+    }
 }

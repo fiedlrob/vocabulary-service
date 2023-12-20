@@ -12,4 +12,8 @@ public class CollectionEntrySpecification {
                 criteriaBuilder.equal(root.get("keyword"), keyword)
         );
     }
+
+    public static Specification<CollectionEntry> byParentId(Long parentId) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("parentId"), parentId);
+    }
 }

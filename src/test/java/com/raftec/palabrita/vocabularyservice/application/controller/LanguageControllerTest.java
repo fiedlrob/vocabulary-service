@@ -2,16 +2,12 @@ package com.raftec.palabrita.vocabularyservice.application.controller;
 
 import com.raftec.palabrita.vocabularyservice.DataProvider;
 import com.raftec.palabrita.vocabularyservice.domain.model.Language;
-import com.raftec.palabrita.vocabularyservice.infrastructure.repositories.CollectionRepository;
-import com.raftec.palabrita.vocabularyservice.infrastructure.repositories.LanguageRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -30,15 +26,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(LanguageController.class)
-@ComponentScan(basePackages = "com.raftec.palabrita.vocabularyservice")
-class LanguageControllerTest {
+class LanguageControllerTest extends ControllerBaseTest {
     @Autowired
     private MockMvc mockMvc;
-
-    @MockBean
-    private LanguageRepository languageRepository;
-    @MockBean
-    private CollectionRepository collectionRepository;
 
     @Test
     @DisplayName("Read the first page of languages and check that the first and last languages are correct")

@@ -2,6 +2,8 @@ package com.raftec.palabrita.vocabularyservice.application.controller;
 
 import com.raftec.palabrita.vocabularyservice.application.dto.CollectionEntryRequest;
 import com.raftec.palabrita.vocabularyservice.application.dto.CollectionEntryResponse;
+import com.raftec.palabrita.vocabularyservice.application.dto.PagedResponse;
+import com.raftec.palabrita.vocabularyservice.application.exceptions.InvalidPageException;
 import com.raftec.palabrita.vocabularyservice.application.mapper.CollectionEntryMapper;
 import com.raftec.palabrita.vocabularyservice.domain.services.ICollectionService;
 import jakarta.validation.constraints.Min;
@@ -36,20 +38,35 @@ public class CollectionEntriesController {
 
         return ResponseEntity.ok(collectionEntries);
     }
+
     @GetMapping(params = { "page", "size" }, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<CollectionEntryResponse>> getCollectionEntriesPaginated(
+    public ResponseEntity<PagedResponse<CollectionEntryResponse>> getCollectionEntriesPaginated(
             Principal principal,
             @PathVariable String collectionId,
             @RequestParam("page") @Min(value = 1, message = "{validation.page.greater.zero}") int page,
             @RequestParam("size") @Min(value = 1, message = "{validation.size.greater.zero}") int size) {
-        var collection = collectionService.getCollection(principal.getName(), collectionId);
+        // If the collection does not exist, return a 404 HTTP status code.
+        // If the user is not the owner of the collection, return a 404 HTTP status code.
+        if (!collectionService.isOwner(principal.getName(), collectionId)) {
+            return ResponseEntity.notFound().build();
+        }
 
-        var collectionEntries = collection.getCollectionEntries().stream()
-                .map(CollectionEntryMapper.INSTANCE::collectionEntryToResponse).toList();
+        var totalCount = collectionService.getCollectionEntriesCount(principal.getName(), collectionId);
+        var totalPages = (int) (totalCount / size + 1);
+
+        // If the requested page is greater than the total number of pages, we throw an exception
+        // This exception will be handled by the CustomResponseEntityExceptionHandlerHandler class
+        if (page > totalPages) {
+            throw new InvalidPageException(totalPages, page);
+        }
+
+        var collectionEntries = collectionService.getCollectionEntries(principal.getName(), collectionId, page - 1, size)
+                .stream().map(CollectionEntryMapper.INSTANCE::collectionEntryToResponse).toList();
         collectionEntries.forEach(collectionEntryResponse -> addLinksToResponse(
                 principal, collectionId, collectionEntryResponse));
 
-        return ResponseEntity.ok(collectionEntries);
+        return ResponseEntity.ok(new PagedResponse<>(collectionEntries.size(), page, (int) totalCount, totalPages,
+                page > 1, page < totalPages, collectionEntries));
     }
 
     @GetMapping(path = "/{keyword}", produces = MediaType.APPLICATION_JSON_VALUE)

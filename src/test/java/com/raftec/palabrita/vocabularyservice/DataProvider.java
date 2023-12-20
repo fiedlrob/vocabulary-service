@@ -19,7 +19,7 @@ public class DataProvider {
                                 TestConstants.CreationDate1,
                                 TestConstants.CollectionName1,
                                 new Language("en", "English", "English"),
-                                new Language("es", "Spanish", "Español"),
+                                new Language("de", "German", "Deutsch"),
                                 new ArrayList<>()),
                         new Collection(
                                 100L,

@@ -2,6 +2,7 @@ package com.raftec.palabrita.vocabularyservice.domain.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 
@@ -13,6 +14,8 @@ import java.util.List;
 @Getter
 @Setter
 public class CollectionEntry {
+    public static final Sort DEFAULT_SORT = Sort.by("keyword").ascending();
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

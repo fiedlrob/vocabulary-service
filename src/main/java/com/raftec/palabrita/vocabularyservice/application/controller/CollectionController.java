@@ -106,5 +106,7 @@ public class CollectionController {
                 principal, collectionId)).withSelfRel().withType("GET"));
         collectionResponse.add(linkTo(methodOn(CollectionController.class).deleteCollection(
                 principal, collectionId)).withRel("delete").withType("DELETE"));
+        collectionResponse.add(linkTo(methodOn(CollectionEntriesController.class).getCollectionEntries(
+                principal, collectionId)).withRel("entries").withType("GET"));
     }
 }

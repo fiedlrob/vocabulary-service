@@ -9,6 +9,7 @@ import java.util.List;
 
 public interface ICollectionService {
     // region Collection related methods
+    boolean isOwner(String userId, String collectionId);
     /**
      * This method returns a collection by its id. The collection must belong to the user identified by userId.
      *
@@ -27,5 +28,7 @@ public interface ICollectionService {
     // region Collection Entries related methods
     void deleteCollectionEntry(String userId, String collectionId, String keyword);
     CollectionEntry createCollectionEntry(String userId, String collectionId, CollectionEntryRequest collectionEntryRequest);
+    List<CollectionEntry> getCollectionEntries(String userId, String collectionId, int page, int size);
+    long getCollectionEntriesCount(String userId, String collectionId);
     // endregion
 }
